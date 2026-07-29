@@ -122,23 +122,60 @@ def exibir_menu():
 
         # 8. Abrir Ordem de Serviço
         elif opcao == "8":
-            id_eq = input("ID do Equipamento: ")
-            if equipamento_repository.buscar_por_id(id_eq):
-                defeito = input("Defeito Relatado: ")
-                prioridade = input("Prioridade (BAIXA, MEDIA, ALTA) [MEDIA]: ").upper() or "MEDIA"
-                v_servico = float(input("Valor Serviço (€) [0.0]: ") or 0.0)
-                v_pecas = float(input("Valor Peças (€) [0.0]: ") or 0.0)
-                desc = float(input("Desconto (€) [0.0]: ") or 0.0)
-                
-                os = OrdemServico(
-                    id_equipamento=id_eq, defeito_relatado=defeito, prioridade=prioridade,
-                    valor_servico=v_servico, valor_pecas=v_pecas, desconto=desc
-                )
-                ordem_servico_repository.abrir_ordem(os)
-                historico_ordem_repository.registrar_historico(os.id_ordem, None, 1, "Abertura inicial da OS")
-                print(f"✅ Ordem de Serviço #{os.id_ordem} aberta! Total: {os.valor_total:.2f}€")
-            else:
+            print("\n--- ABERTURA DE ORDEM DE SERVIÇO ---")
+            id_eq = input("ID do Equipamento: ").strip()
+            
+            # Verificar se o equipamento existe
+            eq = equipamento_repository.buscar_por_id(id_eq)
+            if not eq:
                 print("❌ Equipamento não encontrado.")
+            else:
+                cliente = cliente_repository.buscar_por_id(eq['id_cliente'])
+                print(f"➜ Equipamento: {eq['marca']} {eq['modelo']} | Cliente: {cliente['nome']}")
+                
+                defeito = input("Defeito Relatado: ").strip()
+                tecnico = input("Técnico Responsável: ").strip() or "Ana Pereira"
+                prioridade = input("Prioridade (BAIXA, MEDIA, ALTA) [MEDIA]: ").strip().upper() or "MEDIA"
+                
+                v_servico = float(input("Valor Serviço (€) [0.0]: ").strip() or 0.0)
+                v_pecas = float(input("Valor Peças (€) [0.0]: ").strip() or 0.0)
+                desc = float(input("Desconto (€) [0.0]: ").strip() or 0.0)
+                
+                # 1. Instanciar e gravar a OS
+                os_obj = OrdemServico(
+                    id_equipamento=id_eq,
+                    defeito_relatado=defeito,
+                    prioridade=prioridade,
+                    valor_servico=v_servico,
+                    valor_pecas=v_pecas,
+                    desconto=desc
+                )
+                ordem_servico_repository.abrir_ordem(os_obj)
+                
+                # 2. Registar o histórico inicial com o Técnico
+                historico_ordem_repository.registrar_historico(
+                    id_ordem=os_obj.id_ordem,
+                    id_status_anterior=None,
+                    id_status_novo=1,  # 1 = Aberta / Em Serviço
+                    observacao="Abertura inicial da Ordem de Serviço",
+                    usuario=tecnico
+                )
+                
+                info = ordem_servico_repository.buscar_detalhes_exibicao(os_obj.id_ordem)
+                data_formatada = info['created_at'].strftime("%d/%m/%Y %H:%M")
+                
+                print("\n" + "┌" + "─"*46 + "┐")
+                print(f"│ {'ORDENS DE SERVIÇO':^44} │")
+                print("├" + "─"*46 + "┤")
+                print(f"│  ID: {info['id_ordem']:<39} │")
+                print(f"│  Cliente: {info['cliente_nome']:<34} │")
+                print(f"│  Equipamento: {info['equipamento_modelo']:<30} │")
+                print(f"│  Defeito: {info['defeito_relatado']:<34} │")
+                print(f"│  Estado: {info['status_nome']:<35} │")
+                print(f"│  Técnico: {info['tecnico']:<34} │")
+                print(f"│  Abertura: {data_formatada:<33} │")
+                print("└" + "─"*46 + "┘")
+                print("\033[92m>> Operação realizada com sucesso!\033[0m\n")
 
         # 9. Alterar Estado da Ordem
         elif opcao == "9":
