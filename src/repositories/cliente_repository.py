@@ -5,15 +5,13 @@ def inserir(cliente):
     cursor = conexao.cursor()
 
     sql = """
-        INSERT INTO clientes (nome, email, telefone)
-        VALUES (%s, %s, %s)
+        INSERT INTO clientes (nome, email, telefone, nif, morada)
+        VALUES (%s, %s, %s, %s, %s)
     """
-    valores = (cliente.nome, cliente.email, cliente.telefone)
-
+    valores = (cliente.nome, cliente.email, cliente.telefone, cliente.nif, cliente.morada)
     cursor.execute(sql, valores)
     conexao.commit()
     cliente.id_cliente = cursor.lastrowid
-
     cursor.close()
     conexao.close()
     return cliente
@@ -21,18 +19,9 @@ def inserir(cliente):
 def listar():
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
-
-    sql = """
-        SELECT id_cliente, nome, email, telefone, status,
-               created_at, updated_at, deleted_at
-        FROM clientes
-        WHERE status = 1
-        ORDER BY id_cliente
-    """
-
+    sql = "SELECT * FROM clientes WHERE status = 1 ORDER BY id_cliente"
     cursor.execute(sql)
     clientes = cursor.fetchall()
-
     cursor.close()
     conexao.close()
     return clientes
