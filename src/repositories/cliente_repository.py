@@ -64,3 +64,24 @@ def excluir(id_cliente):
 
     cursor.close()
     conexao.close()
+
+def buscar_por_id(id_cliente):
+    conexao = conectar()
+    cursor = conexao.cursor(dictionary=True)
+    sql = "SELECT * FROM clientes WHERE id_cliente = %s AND status = 1"
+    cursor.execute(sql, (id_cliente,))
+    cliente = cursor.fetchone()
+    cursor.close()
+    conexao.close()
+    return cliente
+
+def pesquisar_por_nome(nome):
+    conexao = conectar()
+    cursor = conexao.cursor(dictionary=True)
+    sql = "SELECT * FROM clientes WHERE nome LIKE %s AND status = 1"
+    cursor.execute(sql, (f"%{nome}%",))
+    clientes = cursor.fetchall()
+    cursor.close()
+    conexao.close()
+    return clientes
+
