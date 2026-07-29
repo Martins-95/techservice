@@ -67,3 +67,30 @@ def listar():
     cursor.close()
     conexao.close()
     return ordens
+
+def buscar_detalhes_exibicao(id_ordem):
+    conexao = conectar()
+    cursor = conexao.cursor(dictionary=True)
+    sql = """
+        SELECT 
+            os.id_ordem, 
+            os.defeito_relatado, 
+            os.created_at,
+            c.nome AS cliente_nome, 
+            CONCAT(eq.marca, ' ', eq.modelo) AS equipamento_modelo,
+            so.nome AS status_nome,
+            COALESCE(h.usuario, 'Sistema') AS tecnico
+        FROM ordens_servico os
+        JOIN equipamentos eq ON os.id_equipamento = eq.id_equipamento
+        JOIN clientes c ON eq.id_cliente = c.id_cliente
+        JOIN status_ordem so ON os.id_status = so.id_status
+        LEFT JOIN historico_ordem_servico h ON os.id_ordem = h.id_ordem
+        WHERE os.id_ordem = %s
+        ORDER BY h.id_historico ASC
+        LIMIT 1;
+    """
+    cursor.execute(sql, (id_ordem,))
+    detalhes = cursor.fetchone()
+    cursor.close()
+    conexao.close()
+    return detalhes
