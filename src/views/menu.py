@@ -15,19 +15,20 @@ def exibir_menu():
         print("    TECHSERVICE - SISTEMA DE ASSISTÊNCIA")
         print("="*45)
         print(" 1. Criar Cliente")
-        print(" 2. Editar Cliente")
-        print(" 3. Remover Cliente")
-        print(" 4. Pesquisar Cliente")
-        print(" 5. Criar Equipamento")
-        print(" 6. Editar Equipamento")
-        print(" 7. Abrir Ordem de Serviço")
-        print(" 8. Alterar Estado da Ordem")
-        print(" 9. Listar Ordens de Serviço")
-        print("10. Consultar Histórico da Ordem")
+        print(" 2. Listar Todos os Clientes")
+        print(" 3. Editar Cliente")
+        print(" 4. Remover Cliente")
+        print(" 5. Pesquisar Cliente por Nome")
+        print(" 6. Criar Equipamento")
+        print(" 7. Editar Equipamento")
+        print(" 8. Abrir Ordem de Serviço")
+        print(" 9. Alterar Estado da Ordem")
+        print("10. Listar Ordens de Serviço")
+        print("11. Consultar Histórico da Ordem")
         print(" 0. Sair")
         print("="*45)
         
-        opcao = input("Selecione uma opção (0-10): ").strip()
+        opcao = input("Selecione uma opção (0-11): ").strip()
         
         # 1. Criar Cliente
         if opcao == "1":
@@ -40,8 +41,23 @@ def exibir_menu():
             cliente_repository.inserir(c)
             print(f"✅ Cliente inserido! ID: {c.id_cliente}")
 
-        # 2. Editar Cliente
+        # 2. Listar Todos os Clientes
         elif opcao == "2":
+            clientes = cliente_repository.listar()
+            print("\n" + "-"*65)
+            print("                LISTA DE CLIENTES ATIVOS")
+            print("-"*65)
+            if clientes:
+                for c in clientes:
+                    nif_str = c['nif'] if c['nif'] else 'N/A'
+                    tel_str = c['telefone'] if c['telefone'] else 'N/A'
+                    print(f"ID: {c['id_cliente']:<3} | Nome: {c['nome']:<20} | NIF: {nif_str:<10} | Tel: {tel_str:<10} | Email: {c['email']}")
+            else:
+                print("Nenhum cliente ativo encontrado.")
+            print("-"*65)
+
+        # 3. Editar Cliente
+        elif opcao == "3":
             id_c = input("ID do Cliente a editar: ")
             c = cliente_repository.buscar_por_id(id_c)
             if c:
@@ -57,25 +73,25 @@ def exibir_menu():
             else:
                 print("❌ Cliente não encontrado.")
 
-        # 3. Remover Cliente
-        elif opcao == "3":
+        # 4. Remover Cliente
+        elif opcao == "4":
             id_c = input("ID do Cliente a remover: ")
             if cliente_repository.buscar_por_id(id_c):
                 cliente_repository.excluir(id_c)
-                print("✅ Cliente removido (exclusão lógica realizadada)!")
+                print("✅ Cliente removido (exclusão lógica realizada)!")
             else:
                 print("❌ Cliente não encontrado.")
 
-        # 4. Pesquisar Cliente
-        elif opcao == "4":
+        # 5. Pesquisar Cliente por Nome
+        elif opcao == "5":
             termo = input("Digite o nome ou parte do nome: ")
             resultados = cliente_repository.pesquisar_por_nome(termo)
             print(f"\n--- Encontrados ({len(resultados)}) ---")
             for item in resultados:
                 print(f"ID: {item['id_cliente']} | Nome: {item['nome']} | Tel: {item['telefone']} | Email: {item['email']}")
 
-        # 5. Criar Equipamento
-        elif opcao == "5":
+        # 6. Criar Equipamento
+        elif opcao == "6":
             id_cliente = input("ID do Proprietário (Cliente): ")
             if cliente_repository.buscar_por_id(id_cliente):
                 tipo = input("Tipo (ex: Laptop, Smartphone): ")
@@ -88,8 +104,8 @@ def exibir_menu():
             else:
                 print("❌ Cliente não existe.")
 
-        # 6. Editar Equipamento
-        elif opcao == "6":
+        # 7. Editar Equipamento
+        elif opcao == "7":
             id_eq = input("ID do Equipamento a editar: ")
             eq = equipamento_repository.buscar_por_id(id_eq)
             if eq:
@@ -104,8 +120,8 @@ def exibir_menu():
             else:
                 print("❌ Equipamento não encontrado.")
 
-        # 7. Abrir Ordem de Serviço
-        elif opcao == "7":
+        # 8. Abrir Ordem de Serviço
+        elif opcao == "8":
             id_eq = input("ID do Equipamento: ")
             if equipamento_repository.buscar_por_id(id_eq):
                 defeito = input("Defeito Relatado: ")
@@ -119,14 +135,13 @@ def exibir_menu():
                     valor_servico=v_servico, valor_pecas=v_pecas, desconto=desc
                 )
                 ordem_servico_repository.abrir_ordem(os)
-                # Criar primeiro registo no histórico
                 historico_ordem_repository.registrar_historico(os.id_ordem, None, 1, "Abertura inicial da OS")
                 print(f"✅ Ordem de Serviço #{os.id_ordem} aberta! Total: {os.valor_total:.2f}€")
             else:
                 print("❌ Equipamento não encontrado.")
 
-        # 8. Alterar Estado da Ordem
-        elif opcao == "8":
+        # 9. Alterar Estado da Ordem
+        elif opcao == "9":
             id_os = input("ID da Ordem de Serviço: ")
             print("Estados disponíveis: 1-Aberta | 2-Em Andamento | 3-Aguardando Peças | 4-Concluída | 5-Cancelada")
             novo_st = int(input("Novo ID do Estado: "))
@@ -136,8 +151,8 @@ def exibir_menu():
             sucesso, msg = ordem_servico_service.alterar_status_ordem(id_os, novo_st, obs, tecnico)
             print("✅ " + msg if sucesso else "❌ " + msg)
 
-        # 9. Listar Ordens de Serviço
-        elif opcao == "9":
+        # 10. Listar Ordens de Serviço
+        elif opcao == "10":
             ordens = ordem_servico_repository.listar()
             print("\n" + "-"*60)
             print("LISTA DE ORDENS DE SERVIÇO")
@@ -145,8 +160,8 @@ def exibir_menu():
             for o in ordens:
                 print(f"OS #{o['id_ordem']} | Cliente: {o['cliente_nome']} | Equip: {o['equipamento_modelo']} | Status: {o['status_nome']} | Total: {o['valor_total']:.2f}€")
 
-        # 10. Consultar Histórico da Ordem
-        elif opcao == "10":
+        # 11. Consultar Histórico da Ordem
+        elif opcao == "11":
             id_os = input("ID da Ordem de Serviço: ")
             historicos = historico_ordem_repository.listar_por_ordem(id_os)
             print(f"\n--- Histórico de Alterações da OS #{id_os} ---")
