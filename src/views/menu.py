@@ -202,7 +202,7 @@ def exibir_menu():
             sucesso, msg = ordem_servico_service.alterar_status_ordem(id_os, novo_st, obs, tecnico)
             print("✅ " + msg if sucesso else "❌ " + msg)
 
-        # 10. Listar Ordens de Serviço
+        # 11. Listar Ordens de Serviço
         elif opcao == "11":
             ordens = ordem_servico_repository.listar()
             print("\n" + "-"*60)
@@ -211,7 +211,7 @@ def exibir_menu():
             for o in ordens:
                 print(f"OS #{o['id_ordem']} | Cliente: {o['cliente_nome']} | Equip: {o['equipamento_modelo']} | Status: {o['status_nome']} | Total: {o['valor_total']:.2f}€")
 
-        # 14. Consultar Histórico da Ordem
+        # 12. Consultar Histórico da Ordem
         elif opcao == "12":
             id_os = input("ID da Ordem de Serviço: ")
             historicos = historico_ordem_repository.listar_por_ordem(id_os)
