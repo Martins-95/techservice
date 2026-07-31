@@ -20,15 +20,16 @@ def exibir_menu():
         print(" 4. Remover Cliente")
         print(" 5. Pesquisar Cliente por Nome")
         print(" 6. Criar Equipamento")
-        print(" 7. Editar Equipamento")
-        print(" 8. Abrir Ordem de Serviço")
-        print(" 9. Alterar Estado da Ordem")
-        print("10. Listar Ordens de Serviço")
-        print("11. Consultar Histórico da Ordem")
+        print(" 7. Listar Equipamentos")
+        print(" 8. Editar Equipamento")
+        print(" 9. Abrir Ordem de Serviço")
+        print("10. Alterar Estado da Ordem")
+        print("11. Listar Ordens de Serviço")
+        print("12. Consultar Histórico da Ordem")
         print(" 0. Sair")
         print("="*45)
         
-        opcao = input("Selecione uma opção (0-11): ").strip()
+        opcao = input("Selecione uma opção (0-12): ").strip()
         
         # 1. Criar Cliente
         if opcao == "1":
@@ -104,8 +105,21 @@ def exibir_menu():
             else:
                 print("❌ Cliente não existe.")
 
-        # 7. Editar Equipamento
+        # 7. Listar Equipamentos
         elif opcao == "7":
+            equipamentos = equipamento_repository.listar_equipamentos()
+            print("\n" + "-"*65)
+            print("                LISTA DE EQUIPAMENTOS ATIVOS")
+            print("-"*65)
+            if equipamentos:
+                for eq in equipamentos:
+                    print(f"ID: {eq['id_equipamento']:<3} | Tipo: {eq['tipo']:<15} | Marca: {eq['marca']:<15} | Modelo: {eq['modelo']:<20} | Nº Série: {eq['numero_serie']}")
+            else:
+                print("Nenhum equipamento ativo encontrado.")
+            print("-"*65)
+
+        # 8. Editar Equipamento
+        elif opcao == "8":
             id_eq = input("ID do Equipamento a editar: ")
             eq = equipamento_repository.buscar_por_id(id_eq)
             if eq:
@@ -120,8 +134,8 @@ def exibir_menu():
             else:
                 print("❌ Equipamento não encontrado.")
 
-        # 8. Abrir Ordem de Serviço
-        elif opcao == "8":
+        # 9. Abrir Ordem de Serviço
+        elif opcao == "9":
             print("\n--- ABERTURA DE ORDEM DE SERVIÇO ---")
             id_eq = input("ID do Equipamento: ").strip()
             
@@ -177,8 +191,8 @@ def exibir_menu():
                 print("└" + "─"*46 + "┘")
                 print("\033[92m>> Operação realizada com sucesso!\033[0m\n")
 
-        # 9. Alterar Estado da Ordem
-        elif opcao == "9":
+        # 10. Alterar Estado da Ordem
+        elif opcao == "10":
             id_os = input("ID da Ordem de Serviço: ")
             print("Estados disponíveis: 1-Aberta | 2-Em Andamento | 3-Aguardando Peças | 4-Concluída | 5-Cancelada")
             novo_st = int(input("Novo ID do Estado: "))
@@ -189,7 +203,7 @@ def exibir_menu():
             print("✅ " + msg if sucesso else "❌ " + msg)
 
         # 10. Listar Ordens de Serviço
-        elif opcao == "10":
+        elif opcao == "11":
             ordens = ordem_servico_repository.listar()
             print("\n" + "-"*60)
             print("LISTA DE ORDENS DE SERVIÇO")
@@ -197,8 +211,8 @@ def exibir_menu():
             for o in ordens:
                 print(f"OS #{o['id_ordem']} | Cliente: {o['cliente_nome']} | Equip: {o['equipamento_modelo']} | Status: {o['status_nome']} | Total: {o['valor_total']:.2f}€")
 
-        # 11. Consultar Histórico da Ordem
-        elif opcao == "11":
+        # 14. Consultar Histórico da Ordem
+        elif opcao == "12":
             id_os = input("ID da Ordem de Serviço: ")
             historicos = historico_ordem_repository.listar_por_ordem(id_os)
             print(f"\n--- Histórico de Alterações da OS #{id_os} ---")

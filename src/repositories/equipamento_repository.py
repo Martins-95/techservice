@@ -18,6 +18,16 @@ def inserir(equipamento):
     conexao.close()
     return equipamento
 
+def listar_equipamentos():
+    conexao = conectar()
+    cursor = conexao.cursor(dictionary=True)
+    sql = "SELECT * FROM equipamentos WHERE status = 1"
+    cursor.execute(sql)
+    equipamentos = cursor.fetchall()
+    cursor.close()
+    conexao.close()
+    return equipamentos
+
 def listar_por_cliente(id_cliente):
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
