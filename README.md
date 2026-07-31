@@ -109,7 +109,7 @@ Será criada:
 techservice_db
 └── clientes
 ```
-### Diagrama da DB
+### DER
 <img width="880" height="664" alt="Captura de ecrã 2026-07-29, às 18 05 11" src="https://github.com/user-attachments/assets/a18000c7-90cd-4821-adc9-1d92847df7fa" />
 
 
